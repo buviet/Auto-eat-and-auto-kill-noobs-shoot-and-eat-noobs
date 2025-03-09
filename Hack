@@ -1,0 +1,99 @@
+-- Create a ScreenGui
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "ButtonGui"
+screenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+
+-- Create a TextButton
+local button = Instance.new("TextButton")
+button.Name = "AutoTPandEquipButton"
+button.Size = UDim2.new(0, 200, 0, 50) -- Size of the button
+button.Position = UDim2.new(0.5, -100, 0.5, -25) -- Center the button
+button.Text = "Auto TP and Equip"
+button.BackgroundColor3 = Color3.fromRGB(255, 255, 255) -- White color
+button.BorderSizePixel = 0 -- Remove border for smooth appearance
+button.Font = Enum.Font.SourceSansBold
+button.TextColor3 = Color3.fromRGB(0, 0, 0) -- Black text color
+button.TextSize = 24
+button.Parent = screenGui
+
+-- Function to make the button draggable
+local function makeDraggable(guiObject)
+    local dragging = false
+    local dragInput, mousePos, framePos
+
+    local function update(input)
+        local delta = input.Position - mousePos
+        guiObject.Position = UDim2.new(
+            framePos.X.Scale,
+            framePos.X.Offset + delta.X,
+            framePos.Y.Scale,
+            framePos.Y.Offset + delta.Y
+        )
+    end
+
+    guiObject.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = true
+            mousePos = input.Position
+            framePos = guiObject.Position
+
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    dragging = false
+                end
+            end)
+        end
+    end)
+
+    guiObject.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement then
+            dragInput = input
+        end
+    end)
+
+    game:GetService("UserInputService").InputChanged:Connect(function(input)
+        if dragging and input == dragInput then
+            update(input)
+        end
+    end)
+end
+
+-- Make the button draggable
+makeDraggable(button)
+
+-- Function to equip item called "King Slayer"
+local function equipKingSlayer()
+    local player = game.Players.LocalPlayer
+    local backpack = player:WaitForChild("Backpack")
+    local kingSlayerItem = backpack:FindFirstChild("King Slayer")
+
+    if kingSlayerItem then
+        player.Character.Humanoid:EquipTool(kingSlayerItem)
+    else
+        warn("King Slayer item not found in backpack.")
+    end
+end
+
+-- Function to teleport to noobs
+local function teleportToNoobs()
+    local player = game.Players.LocalPlayer
+    local character = player.Character
+    if not character then
+        warn("Character not found.")
+        return
+    end
+
+    for _, noob in pairs(workspace:GetChildren()) do
+        if noob:IsA("Model") and noob:FindFirstChild("Humanoid") and noob:FindFirstChild("Head") then
+            character:SetPrimaryPartCFrame(noob.PrimaryPart.CFrame)
+            wait(1) -- Adjust the wait time as needed
+        end
+    end
+end
+
+-- Add a click event to the button
+button.MouseButton1Click:Connect(function()
+    print("Auto TP and Equip button was clicked!")
+    equipKingSlayer()
+    teleportToNoobs()
+end)
