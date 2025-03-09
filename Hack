@@ -1,122 +1,90 @@
--- Enhanced Auto TP and Equip Script
-
 local player = game.Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
 
 -- Create the ScreenGui
-local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "UtilityGui"
-screenGui.Parent = playerGui
+local settingsGui = Instance.new("ScreenGui")
+settingsGui.Name = "SettingsGui"
+settingsGui.Parent = playerGui
+settingsGui.Enabled = false -- Starts hidden
 
--- Create the Button Frame (for better organization and draggable area)
-local buttonFrame = Instance.new("Frame")
-buttonFrame.Name = "ButtonFrame"
-buttonFrame.Size = UDim2.new(0, 200, 0, 50)
-buttonFrame.Position = UDim2.new(0.5, -100, 0.5, -25)
-buttonFrame.BackgroundColor3 = Color3.new(1, 1, 1) -- White
-buttonFrame.BorderSizePixel = 0
-buttonFrame.Parent = screenGui
+-- Create the main Frame
+local mainFrame = Instance.new("Frame")
+mainFrame.Name = "MainFrame"
+mainFrame.Size = UDim2.new(0, 300, 0, 200)
+mainFrame.Position = UDim2.new(0.5, -150, 0.5, -100)
+mainFrame.BackgroundColor3 = Color3.new(0.2, 0.2, 0.2) -- Dark gray
+mainFrame.BorderSizePixel = 2
+mainFrame.BorderColor3 = Color3.new(0.5, 0.5, 0.5)
+mainFrame.Parent = settingsGui
 
--- Create the TextButton inside the Frame
-local button = Instance.new("TextButton")
-button.Name = "AutoTPandEquipButton"
-button.Size = UDim2.new(1, 0, 1, 0) -- Fill the Frame
-button.Position = UDim2.new(0, 0, 0, 0)
-button.Text = "Auto TP & Equip"
-button.BackgroundColor3 = Color3.new(1, 1, 1) -- White
-button.BorderSizePixel = 0
-button.Font = Enum.Font.SourceSansBold
-button.TextColor3 = Color3.new(0, 0, 0) -- Black
-button.TextSize = 20
-button.Parent = buttonFrame
+-- Create the title Label
+local titleLabel = Instance.new("TextLabel")
+titleLabel.Name = "TitleLabel"
+titleLabel.Size = UDim2.new(1, 0, 0, 30)
+titleLabel.Position = UDim2.new(0, 0, 0, 0)
+titleLabel.BackgroundTransparency = 1
+titleLabel.Text = "Settings"
+titleLabel.TextColor3 = Color3.new(1, 1, 1) -- White
+titleLabel.Font = Enum.Font.SourceSansBold
+titleLabel.TextSize = 20
+titleLabel.Parent = mainFrame
 
--- Function to make the frame draggable (better than just the button)
-local function makeDraggable(guiObject)
-    local dragging = false
-    local dragInput, mousePos, framePos
+-- Create the toggle button
+local toggleButton = Instance.new("TextButton")
+toggleButton.Name = "ToggleButton"
+toggleButton.Size = UDim2.new(0.8, 0, 0, 30)
+toggleButton.Position = UDim2.new(0.1, 0, 0.2, 0)
+toggleButton.BackgroundColor3 = Color3.new(0.4, 0.4, 0.4)
+toggleButton.Text = "Toggle Feature: Off"
+toggleButton.TextColor3 = Color3.new(1, 1, 1)
+toggleButton.Font = Enum.Font.SourceSansBold
+toggleButton.TextSize = 16
+toggleButton.Parent = mainFrame
 
-    local function update(input)
-        local delta = input.Position - mousePos
-        guiObject.Position = UDim2.new(
-            framePos.X.Scale,
-            framePos.X.Offset + delta.X,
-            framePos.Y.Scale,
-            framePos.Y.Offset + delta.Y
-        )
-    end
+local toggleState = false
 
-    guiObject.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            dragging = true
-            mousePos = input.Position
-            framePos = guiObject.Position
-
-            input.Changed:Connect(function()
-                if input.UserInputState == Enum.UserInputState.End then
-                    dragging = false
-                end
-            end)
-        end
-    end)
-
-    guiObject.InputChanged:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseMovement then
-            dragInput = input
-        end
-    end)
-
-    game:GetService("UserInputService").InputChanged:Connect(function(input)
-        if dragging and input == dragInput then
-            update(input)
-        end
-    end)
-end
-
--- Make the frame draggable
-makeDraggable(buttonFrame)
-
--- Function to equip "King Slayer" (with better error handling)
-local function equipKingSlayer()
-    local backpack = player:WaitForChild("Backpack")
-    local kingSlayerItem = backpack:FindFirstChild("King Slayer")
-
-    if kingSlayerItem then
-        local character = player.Character
-        if character and character:FindFirstChild("Humanoid") then
-            character.Humanoid:EquipTool(kingSlayerItem)
-            print("King Slayer equipped.")
-        else
-            warn("Player character or humanoid not found.")
-        end
+toggleButton.MouseButton1Click:Connect(function()
+    toggleState = not toggleState
+    if toggleState then
+        toggleButton.Text = "Toggle Feature: On"
+        print("Feature Enabled") -- Replace with your feature's functionality
     else
-        warn("King Slayer not found in backpack.")
+        toggleButton.Text = "Toggle Feature: Off"
+        print("Feature Disabled") -- Replace with your feature's functionality
     end
-end
-
--- Function to teleport to "Noobs" (more robust and efficient)
-local function teleportToNoobs()
-    local character = player.Character
-    if not character or not character:FindFirstChild("HumanoidRootPart") then
-        warn("Player character or HumanoidRootPart not found.")
-        return
-    end
-
-    local noobsFound = false
-    for _, noob in pairs(workspace:GetChildren()) do
-        if noob:IsA("Model") and noob:FindFirstChild("Humanoid") and noob:FindFirstChild("HumanoidRootPart") then
-            character:SetPrimaryPartCFrame(noob.HumanoidRootPart.CFrame * CFrame.new(0, 5, 0)) -- Teleport slightly above
-            wait(0.5) -- Reduced wait for faster teleportation
-            noobsFound = true
-        end
-    end
-    if not noobsFound then
-        warn("No target noobs found in the workspace.")
-    end
-end
-
--- Connect the button click
-button.MouseButton1Click:Connect(function()
-    print("Auto TP and Equip button clicked.")
-    equipKingSlayer()
-    teleportToNoobs()
 end)
+
+-- Create the close button
+local closeButton = Instance.new("TextButton")
+closeButton.Name = "CloseButton"
+closeButton.Size = UDim2.new(0, 30, 0, 30)
+closeButton.Position = UDim2.new(1, -35, 0, 5)
+closeButton.BackgroundColor3 = Color3.new(0.7, 0.2, 0.2) -- Reddish
+closeButton.Text = "X"
+closeButton.TextColor3 = Color3.new(1, 1, 1)
+closeButton.Font = Enum.Font.SourceSansBold
+closeButton.TextSize = 18
+closeButton.Parent = mainFrame
+
+closeButton.MouseButton1Click:Connect(function()
+    settingsGui.Enabled = false
+end)
+
+-- Function to open the settings
+local function openSettings()
+    settingsGui.Enabled = true
+end
+
+-- Example button to open the settings. You'll need to create this in your own script.
+local openSettingsButton = Instance.new("TextButton")
+openSettingsButton.Name = "OpenSettingsButton"
+openSettingsButton.Size = UDim2.new(0, 100, 0, 30)
+openSettingsButton.Position = UDim2.new(0.05, 0, 0.05, 0)
+openSettingsButton.BackgroundColor3 = Color3.new(0.3, 0.3, 0.3)
+openSettingsButton.Text = "Settings"
+openSettingsButton.TextColor3 = Color3.new(1, 1, 1)
+openSettingsButton.Font = Enum.Font.SourceSansBold
+openSettingsButton.TextSize = 16
+openSettingsButton.Parent = playerGui
+
+openSettingsButton.MouseButton1Click:Connect(openSettings)
