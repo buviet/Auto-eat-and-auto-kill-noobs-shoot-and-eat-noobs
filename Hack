@@ -1,37 +1,4 @@
-local player = game.Players.LocalPlayer
-local playerGui = player:WaitForChild("PlayerGui")
-
--- Create the main ScreenGui
-local mainGui = Instance.new("ScreenGui")
-mainGui.Name = "CombinedUI"
-mainGui.Parent = playerGui
-
--- Settings UI (toggle button, save, clear)
-local settingsGui = Instance.new("ScreenGui")
-settingsGui.Name = "SettingsGui"
-settingsGui.Parent = mainGui
-settingsGui.Enabled = false
-
-local mainFrame = Instance.new("Frame")
-mainFrame.Name = "MainFrame"
-mainFrame.Size = UDim2.new(0, 300, 0, 250) -- Increased height for new buttons
-mainFrame.Position = UDim2.new(0.5, -150, 0.5, -125) -- Adjusted position
-mainFrame.BackgroundColor3 = Color3.new(0.2, 0.2, 0.2)
-mainFrame.BorderSizePixel = 2
-mainFrame.BorderColor3 = Color3.new(0.5, 0.5, 0.5)
-mainFrame.Parent = settingsGui
-
-local titleLabel = Instance.new("TextLabel")
-titleLabel.Name = "TitleLabel"
-titleLabel.Size = UDim2.new(1, 0, 0, 30)
-titleLabel.Position = UDim2.new(0, 0, 0, 0)
-titleLabel.BackgroundTransparency = 1
-titleLabel.Text = "Settings"
-titleLabel.TextColor3 = Color3.new(1, 1, 1)
-titleLabel.Font = Enum.Font.SourceSansBold
-titleLabel.TextSize = 20
-titleLabel.Parent = mainFrame
-
+-- Toggle Button
 local toggleButton = Instance.new("TextButton")
 toggleButton.Name = "ToggleButton"
 toggleButton.Size = UDim2.new(0.8, 0, 0, 30)
@@ -58,6 +25,7 @@ toggleButton.MouseButton1Click:Connect(function()
     end
 end)
 
+-- Save Button
 local saveButton = Instance.new("TextButton")
 saveButton.Name = "SaveButton"
 saveButton.Size = UDim2.new(0.4, 0, 0, 30)
@@ -76,6 +44,7 @@ saveButton.MouseButton1Click:Connect(function()
     -- Add your save data functionality here
 end)
 
+-- Clear Button
 local clearButton = Instance.new("TextButton")
 clearButton.Name = "ClearButton"
 clearButton.Size = UDim2.new(0.4, 0, 0, 30)
@@ -94,6 +63,7 @@ clearButton.MouseButton1Click:Connect(function()
     -- Add your clear data functionality here
 end)
 
+-- Close Button
 local closeButton = Instance.new("TextButton")
 closeButton.Name = "CloseButton"
 closeButton.Size = UDim2.new(0, 30, 0, 30)
@@ -110,30 +80,6 @@ closeCorner.CornerRadius = UDim.new(0.5, 0)
 closeButton.MouseButton1Click:Connect(function()
     settingsGui.Enabled = false
 end)
-
--- Open Settings Button (Gear Shape)
-local openSettingsButton = Instance.new("ImageButton")
-openSettingsButton.Name = "OpenSettingsButton"
-openSettingsButton.Size = UDim2.new(0, 30, 0, 30)
-openSettingsButton.Position = UDim2.new(0.95, -35, 0.05, 0)
-openSettingsButton.BackgroundColor3 = Color3.new(1, 1, 1)
-openSettingsButton.BackgroundTransparency = 1
-openSettingsButton.Image = "rbxassetid://144211158" -- Replace with your gear image asset ID
-openSettingsButton.Parent = mainGui
-
-openSettingsButton.MouseButton1Click:Connect(function()
-    settingsGui.Enabled = true
-end)
-
--- Main Button UI Frame (Left Side)
-local mainButtonFrame = Instance.new("Frame")
-mainButtonFrame.Name = "MainButtonFrame"
-mainButtonFrame.Size = UDim2.new(0, 300, 0, 200)
-mainButtonFrame.Position = UDim2.new(0.05, 0, 0.5, -100)
-mainButtonFrame.BackgroundColor3 = Color3.new(0.3, 0.3, 0.3)
-mainButtonFrame.BorderSizePixel = 2
-mainButtonFrame.BorderColor3 = Color3.new(0.5, 0.5, 0.5)
-mainButtonFrame.Parent = mainGui
 
 -- Auto Eat Button
 local autoEatButton = Instance.new("TextButton")
@@ -172,5 +118,3 @@ autoShootButton.MouseButton1Click:Connect(function()
     print("Auto Shoot clicked!")
     -- Add your Auto Shoot functionality here
 end)
-
--- Add more buttons as needed following the same pattern.
