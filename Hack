@@ -1,22 +1,36 @@
--- Create a ScreenGui
-local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "ButtonGui"
-screenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+-- Enhanced Auto TP and Equip Script
 
--- Create a TextButton
+local player = game.Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+-- Create the ScreenGui
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "UtilityGui"
+screenGui.Parent = playerGui
+
+-- Create the Button Frame (for better organization and draggable area)
+local buttonFrame = Instance.new("Frame")
+buttonFrame.Name = "ButtonFrame"
+buttonFrame.Size = UDim2.new(0, 200, 0, 50)
+buttonFrame.Position = UDim2.new(0.5, -100, 0.5, -25)
+buttonFrame.BackgroundColor3 = Color3.new(1, 1, 1) -- White
+buttonFrame.BorderSizePixel = 0
+buttonFrame.Parent = screenGui
+
+-- Create the TextButton inside the Frame
 local button = Instance.new("TextButton")
 button.Name = "AutoTPandEquipButton"
-button.Size = UDim2.new(0, 200, 0, 50) -- Size of the button
-button.Position = UDim2.new(0.5, -100, 0.5, -25) -- Center the button
-button.Text = "Auto TP and Equip"
-button.BackgroundColor3 = Color3.fromRGB(255, 255, 255) -- White color
-button.BorderSizePixel = 0 -- Remove border for smooth appearance
+button.Size = UDim2.new(1, 0, 1, 0) -- Fill the Frame
+button.Position = UDim2.new(0, 0, 0, 0)
+button.Text = "Auto TP & Equip"
+button.BackgroundColor3 = Color3.new(1, 1, 1) -- White
+button.BorderSizePixel = 0
 button.Font = Enum.Font.SourceSansBold
-button.TextColor3 = Color3.fromRGB(0, 0, 0) -- Black text color
-button.TextSize = 24
-button.Parent = screenGui
+button.TextColor3 = Color3.new(0, 0, 0) -- Black
+button.TextSize = 20
+button.Parent = buttonFrame
 
--- Function to make the button draggable
+-- Function to make the frame draggable (better than just the button)
 local function makeDraggable(guiObject)
     local dragging = false
     local dragInput, mousePos, framePos
@@ -58,42 +72,51 @@ local function makeDraggable(guiObject)
     end)
 end
 
--- Make the button draggable
-makeDraggable(button)
+-- Make the frame draggable
+makeDraggable(buttonFrame)
 
--- Function to equip item called "King Slayer"
+-- Function to equip "King Slayer" (with better error handling)
 local function equipKingSlayer()
-    local player = game.Players.LocalPlayer
     local backpack = player:WaitForChild("Backpack")
     local kingSlayerItem = backpack:FindFirstChild("King Slayer")
 
     if kingSlayerItem then
-        player.Character.Humanoid:EquipTool(kingSlayerItem)
+        local character = player.Character
+        if character and character:FindFirstChild("Humanoid") then
+            character.Humanoid:EquipTool(kingSlayerItem)
+            print("King Slayer equipped.")
+        else
+            warn("Player character or humanoid not found.")
+        end
     else
-        warn("King Slayer item not found in backpack.")
+        warn("King Slayer not found in backpack.")
     end
 end
 
--- Function to teleport to noobs
+-- Function to teleport to "Noobs" (more robust and efficient)
 local function teleportToNoobs()
-    local player = game.Players.LocalPlayer
     local character = player.Character
-    if not character then
-        warn("Character not found.")
+    if not character or not character:FindFirstChild("HumanoidRootPart") then
+        warn("Player character or HumanoidRootPart not found.")
         return
     end
 
+    local noobsFound = false
     for _, noob in pairs(workspace:GetChildren()) do
-        if noob:IsA("Model") and noob:FindFirstChild("Humanoid") and noob:FindFirstChild("Head") then
-            character:SetPrimaryPartCFrame(noob.PrimaryPart.CFrame)
-            wait(1) -- Adjust the wait time as needed
+        if noob:IsA("Model") and noob:FindFirstChild("Humanoid") and noob:FindFirstChild("HumanoidRootPart") then
+            character:SetPrimaryPartCFrame(noob.HumanoidRootPart.CFrame * CFrame.new(0, 5, 0)) -- Teleport slightly above
+            wait(0.5) -- Reduced wait for faster teleportation
+            noobsFound = true
         end
+    end
+    if not noobsFound then
+        warn("No target noobs found in the workspace.")
     end
 end
 
--- Add a click event to the button
+-- Connect the button click
 button.MouseButton1Click:Connect(function()
-    print("Auto TP and Equip button was clicked!")
+    print("Auto TP and Equip button clicked.")
     equipKingSlayer()
     teleportToNoobs()
 end)
